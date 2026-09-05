@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitácora — Semestre 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF0EA;
+    --surface:#FFFFFF;
+    --ink:#1E2A28;
+    --ink-soft:#5B6660;
+    --line:#D7DBD0;
+    --gold:#B98B2A;
+    --gold-soft:#F3E6C8;
+    --teal:#2F6F6B;
+    --teal-soft:#DCEBE9;
+    --rust:#A63D40;
+    --rust-soft:#F3DCDC;
+    --green:#2E7D32;
+    --green-soft:#E8F5E9;
+    --blue:#1565C0;
+    --blue-soft:#E3F2FD;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px;}
+  header.top{
+    display:flex;flex-direction:column;gap:4px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;margin-bottom:24px;
+  }
+  .header-meta{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:.04em;color:var(--ink-soft);
+  }
+  .db-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    padding:4px 10px;border-radius:12px;
+    background:var(--surface);border:1px solid var(--line);
+  }
+  .db-badge .pulse{
+    width:8px;height:8px;border-radius:50%;
+    background:#9E9E9E;
+  }
+  .db-badge.connected .pulse, .db-badge.cloud .pulse{
+    background:var(--green);
+    box-shadow:0 0 0 3px rgba(46,125,50,0.2);
+    animation:pulse-anim 2s infinite;
+  }
+  @keyframes pulse-anim{
+    0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(46,125,50,0.4);}
+    70%{transform:scale(1);box-shadow:0 0 0 6px rgba(46,125,50,0);}
+    100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(46,125,50,0);}
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(28px,5vw,40px);
+    margin:2px 0 6px;
+    font-optical-sizing:auto;
+  }
+  .sub{color:var(--ink-soft);font-size:14.5px;max-width:65ch;line-height:1.5;}
+
+  nav.tabs{
+    display:flex;gap:2px;background:var(--surface);
+    border:1px solid var(--line);border-radius:10px;
+    padding:3px;margin-bottom:26px;overflow-x:auto;
+  }
+  nav.tabs button{
+    flex:1;white-space:nowrap;
+    font-family:'IBM Plex Sans',sans-serif;font-weight:500;font-size:14px;
+    padding:9px 14px;border:none;background:transparent;color:var(--ink-soft);
+    border-radius:7px;cursor:pointer;transition:background .15s,color .15s;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  }
+  nav.tabs button svg{flex-shrink:0;}
+  nav.tabs button.active{background:var(--ink);color:var(--surface);}
+  nav.tabs button:not(.active):hover{background:var(--bg);color:var(--ink);}
+
+  section{display:none;}
+  section.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  h2.section-title{
+    font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:0 0 4px;
+  }
+  p.section-note{color:var(--ink-soft);font-size:13.5px;margin:0 0 18px;line-height:1.5;}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;font-size:12.5px;color:var(--ink-soft);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:2px;display:inline-block;}
+  .dot.pres{background:var(--ink);}
+  .dot.virt{background:var(--teal);}
+
+  table.grid{width:100%;border-collapse:collapse;font-size:13.5px;}
+  table.grid th{
+    font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:11.5px;
+    letter-spacing:.02em;color:var(--ink-soft);text-align:left;
+    padding:8px 6px;border-bottom:1px solid var(--line);
+  }
+  table.grid td{
+    border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+    padding:6px;vertical-align:top;height:64px;
+  }
+  table.grid td:last-child{border-right:none;}
+  table.grid th:first-child,table.grid td:first-child{
+    font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);font-size:12px;
+    white-space:nowrap;border-right:1px solid var(--line);width:76px;
+  }
+  .cell-class{
+    background:var(--bg);border-radius:6px;padding:6px 8px;height:100%;
+    display:flex;flex-direction:column;justify-content:center;gap:2px;
+  }
+  .cell-class.virt{background:var(--teal-soft);}
+  .cell-class .name{font-weight:500;font-size:12.5px;line-height:1.25;}
+  .cell-class .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--teal);
+    text-transform:uppercase;letter-spacing:.03em;
+  }
+
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:18px 20px;margin-bottom:18px;
+  }
+
+  .virtual-list{display:flex;flex-direction:column;gap:10px;margin-top:22px;}
+  .virtual-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--surface);border:1px solid var(--line);border-radius:9px;
+    padding:12px 14px;
+  }
+  .virtual-row .meta{display:flex;flex-direction:column;gap:2px;}
+  .virtual-row .meta .name{font-weight:500;font-size:14px;}
+  .virtual-row .meta .time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  
+  .btn{
+    font-family:'IBM Plex Sans',sans-serif;font-weight:500;font-size:13px;
+    padding:8px 14px;border-radius:7px;border:1px solid var(--ink);
+    background:var(--ink);color:var(--surface);cursor:pointer;
+    white-space:nowrap;transition:all .15s ease;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .btn svg{flex-shrink:0;}
+  .btn:hover{opacity:.88;transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+  .btn.ghost:hover{border-color:var(--ink);background:var(--bg);}
+  .btn.danger{background:var(--rust);border-color:var(--rust);color:#fff;}
+  .btn.teal{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .btn.blue{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .btn.small{padding:5px 10px;font-size:11.5px;border-radius:5px;}
+
+  form.task-form{
+    display:grid;grid-template-columns:2fr 1.3fr 1fr auto auto auto;gap:10px;
+    align-items:end;background:var(--surface);border:1px solid var(--line);
+    border-radius:10px;padding:16px;margin-bottom:22px;
+  }
+  .field{display:flex;flex-direction:column;gap:5px;}
+  label{font-size:11.5px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+  input[type=text],input[type=date],input[type=email],input[type=password],input[type=number],select{
+    font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;padding:8px 10px;
+    border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);
+  }
+  input:focus,select:focus{outline:2px solid var(--teal);border-color:var(--teal);background:#FFF;}
+  form.task-form .check{flex-direction:row;align-items:center;gap:6px;padding-bottom:9px;}
+  form.task-form .check label{font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:var(--ink);cursor:pointer;}
+
+  .task-list{display:flex;flex-direction:column;gap:8px;}
+  .task-row{
+    display:flex;align-items:center;gap:12px;
+    background:var(--surface);border:1px solid var(--line);border-radius:9px;
+    padding:11px 14px;transition:border-color .15s;
+  }
+  .task-row.overdue{border-color:var(--rust);background:var(--rust-soft);}
+  .task-row.soon{border-color:var(--gold);background:var(--gold-soft);}
+  .task-row .box{flex:1;min-width:0;}
+  .task-row .title-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .task-row .title{font-weight:500;font-size:14px;}
+  .task-row .badge{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;
+    letter-spacing:.03em;padding:2px 6px;border-radius:4px;background:var(--rust);color:#fff;
+  }
+  .task-row .subject{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .task-row .due{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);white-space:nowrap;}
+  .task-row .actions{display:flex;gap:6px;}
+  .empty{color:var(--ink-soft);font-size:13.5px;padding:30px 0;text-align:center;}
+
+  .subject-accordion{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;background:var(--surface);overflow:hidden;}
+  .subject-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 16px;cursor:pointer;
+  }
+  .subject-head .name{font-weight:500;font-size:15px;}
+  .subject-head .status{font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:3px 8px;border-radius:5px;}
+  .status.ok{background:var(--teal-soft);color:var(--teal);}
+  .status.warn{background:var(--rust-soft);color:var(--rust);}
+  .status.pending{background:var(--bg);color:var(--ink-soft);}
+  .subject-body{display:none;padding:0 16px 16px;border-top:1px solid var(--line);}
+  .subject-body.open{display:block;}
+  .subject-config{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;}
+  .subject-config .field{display:flex;flex-direction:column;gap:5px;}
+  .subject-config input{
+    width:90px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;padding:7px 9px;
+  }
+  .partial{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px;background:var(--bg);}
+  .partial-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .partial-head .label{font-weight:500;font-size:13.5px;}
+  .partial-head .result{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);}
+  .crit-row{display:grid;grid-template-columns:2fr 90px 90px auto;gap:8px;align-items:center;margin-bottom:6px;}
+  .crit-row input{
+    font-family:'IBM Plex Sans',sans-serif;font-size:13px;padding:6px 8px;
+    background:var(--surface);
+  }
+  .crit-row input.mono{font-family:'IBM Plex Mono',monospace;}
+  .weight-warn{font-size:11.5px;color:var(--rust);margin-top:4px;}
+  .overall-box{
+    margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--gold-soft);
+    font-size:13px;line-height:1.6;
+  }
+  .overall-box.bad{background:var(--rust-soft);}
+  .overall-box strong{font-family:'IBM Plex Mono',monospace;}
+
+  .note-inline{
+    font-size:12px;color:var(--ink-soft);background:var(--bg);border:1px dashed var(--line);
+    border-radius:8px;padding:12px 14px;margin-top:18px;line-height:1.5;
+  }
+
+  /* Ajustes tab styles */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .preset-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .preset-btn{
+    font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;
+    padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);
+    cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;
+  }
+  .preset-btn:hover{background:var(--surface);border-color:var(--ink);}
+  .preset-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .status-banner{
+    padding:12px 14px;border-radius:8px;margin-top:12px;font-size:13px;display:none;
+  }
+  .status-banner.success{display:block;background:var(--green-soft);color:var(--green);border:1px solid #C8E6C9;}
+  .status-banner.error{display:block;background:var(--rust-soft);color:var(--rust);border:1px solid #FFCDD2;}
+  .status-banner.info{display:block;background:var(--teal-soft);color:var(--teal);border:1px solid #B2DFDB;}
+
+  .logs-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;}
+  .logs-table th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);}
+  .logs-table td{padding:6px 8px;border-bottom:1px solid var(--line);}
+  .badge-tag{padding:2px 6px;border-radius:4px;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
+  .badge-tag.ok{background:var(--green-soft);color:var(--green);}
+  .badge-tag.err{background:var(--rust-soft);color:var(--rust);}
+
+  .collapsible-header{
+    cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  }
+  .icon-inline{
+    display:inline-block;vertical-align:middle;position:relative;top:-1px;margin-right:4px;
+  }
+
+  @media (max-width:720px){
+    form.task-form{grid-template-columns:1fr;}
+    .grid-2{grid-template-columns:1fr;}
+    .crit-row{grid-template-columns:1fr 70px 70px auto;}
+    table.grid{font-size:11.5px;}
+    table.grid td{height:56px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="header-meta">
+      <span class="eyebrow">LCDN · SEMESTRE 4 · GAM</span>
+      <div id="db-status-pill" class="db-badge">
+        <span class="pulse"></span>
+        <span id="db-status-text">Iniciando...</span>
+      </div>
+    </div>
+    <h1>Bitácora del semestre</h1>
+    <p class="sub">Horario semanal, gestor de tareas, calculadora de calificaciones y recordatorios de clases virtuales y entregas escolares.</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-tab="horario">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+      Horario
+    </button>
+    <button data-tab="tareas">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tareas
+    </button>
+    <button data-tab="promedios">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+      Promedios
+    </button>
+    <button data-tab="ajustes">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Recordatorios y Respaldo
+    </button>
+  </nav>
+
+  <!-- SECCIÓN: HORARIO -->
+  <section id="tab-horario" class="active">
+    <h2 class="section-title">Horario semanal</h2>
+    <p class="section-note">Presencial en Gustavo A. Madero, salvo lo marcado como virtual.</p>
+    <div class="legend">
+      <span><span class="dot pres"></span> Presencial</span>
+      <span><span class="dot virt"></span> Virtual (concurrente)</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="grid" id="schedule-table"></table>
+    </div>
+
+    <h2 class="section-title" style="margin-top:34px;">Recordatorios de clases virtuales</h2>
+    <p class="section-note">Descarga el recordatorio (.ics) para tu calendario (programado semanalmente hasta el 19 de diciembre de 2026) o genera el aviso por correo con todas tus clases virtuales y tareas (100% sin macros).</p>
+    <div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn teal small" onclick="openEmailAppWithSummary()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        Aviso de Clases Virtuales y Tareas por Correo
+      </button>
+      <button class="btn ghost small" onclick="downloadAllVirtualClassesIcs()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        Descargar Todas (.ics)
+      </button>
+    </div>
+    <div class="virtual-list" id="virtual-list"></div>
+  </section>
+
+  <!-- SECCIÓN: TAREAS -->
+  <section id="tab-tareas">
+    <h2 class="section-title">Tareas pendientes</h2>
+    <p class="section-note">Marca "pesada" si necesita más tiempo: te avisará 3 días antes y a diario hasta la entrega. Las normales se avisan 1 día antes.</p>
+
+    <form class="task-form" id="task-form">
+      <div class="field">
+        <label for="t-title">TAREA</label>
+        <input type="text" id="t-title" placeholder="Ej. Reporte de estadística" required>
+      </div>
+      <div class="field">
+        <label for="t-subject">MATERIA</label>
+        <select id="t-subject"></select>
+      </div>
+      <div class="field">
+        <label for="t-due">ENTREGA</label>
+        <input type="date" id="t-due" required>
+      </div>
+      <div class="field check">
+        <input type="checkbox" id="t-heavy">
+        <label for="t-heavy">Pesada</label>
+      </div>
+      <button type="submit" class="btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agregar Tarea
+      </button>
+      <button type="reset" class="btn ghost" title="Limpiar datos del formulario">
+        Limpiar
+      </button>
+    </form>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:13px;color:var(--ink-soft);font-weight:500;" id="tasks-counter"></span>
+      <div style="display:flex;gap:8px;" id="tasks-actions-bar">
+        <button type="button" class="btn danger small" onclick="clearAllTasks()" id="btn-clear-all-tasks" style="display:none;" title="Eliminar todas las tareas si pusiste datos de más">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          Eliminar todas las tareas
+        </button>
+      </div>
+    </div>
+
+    <div class="task-list" id="task-list"></div>
+    <p class="note-inline">Las tareas se guardan de forma privada en tu dispositivo y se incluyen en los recordatorios. Cada usuario tiene su propia bitácora independiente.</p>
+  </section>
+
+  <!-- SECCIÓN: PROMEDIOS -->
+  <section id="tab-promedios">
+    <h2 class="section-title">Calculadora de promedios</h2>
+    <p class="section-note">Define los parciales y criterios de evaluación por materia. Calcula en tiempo real cuánto necesitas en los parciales restantes para aprobar.</p>
+    <div id="subjects-accordion"></div>
+  </section>
+
+  <!-- SECCIÓN: RECORDATORIOS Y RESPALDO (100% SIN MACROS) -->
+  <section id="tab-ajustes">
+    <h2 class="section-title">Recordatorios por Correo y Respaldo</h2>
+    <p class="section-note">Genera recordatorios de clases virtuales y entregas escolares para enviar por correo o descargar a tu calendario, 100% libre de macros.</p>
+
+    <!-- CARD 1: ENVÍO Y GENERADOR DE RECORDATORIOS POR CORREO (CON CLASES VIRTUALES Y TAREAS) -->
+    <div class="card" style="border-left:4px solid var(--teal);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+        <div>
+          <h3 style="margin:0 0 4px;font-size:16px;color:var(--teal);display:flex;align-items:center;gap:7px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            Recordatorio por Correo (Clases Virtuales + Tareas)
+          </h3>
+          <p class="section-note" style="margin-bottom:12px;">Genera un resumen completo con las clases virtuales programadas para hoy y la semana, junto con las tareas pendientes y sus fechas límites.</p>
+        </div>
+      </div>
+
+      <!-- CORREOS DESTINATARIOS -->
+      <div style="margin:8px 0 14px;">
+        <label style="font-weight:600;color:var(--ink);display:block;margin-bottom:6px;">CORREOS DESTINATARIOS:</label>
+        <div id="email-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+        <button type="button" class="btn ghost small" onclick="addEmailField()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar otro correo
+        </button>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN PARA CORREO -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+        <button class="btn teal" onclick="openEmailAppWithSummary()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          Abrir en Gmail / App de Correo
+        </button>
+        <button class="btn ghost" onclick="copyEmailSummaryToClipboard()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Copiar Resumen al Portapapeles
+        </button>
+        <button class="btn ghost" onclick="downloadAllVirtualClassesIcs()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          Descargar Todas las Clases Virtuales (.ics)
+        </button>
+      </div>
+      <div id="email-action-feedback" class="status-banner"></div>
+
+      <!-- VISTA PREVIA DEL RECORDATORIO -->
+      <div style="margin-top:18px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px 16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;">Vista previa del contenido del correo:</span>
+          <button type="button" class="btn ghost small" onclick="updateEmailPreview()" style="padding:3px 8px;font-size:11px;">Actualizar vista previa</button>
+        </div>
+        <pre id="email-preview-box" style="white-space:pre-wrap;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink);margin:0;line-height:1.5;max-height:220px;overflow-y:auto;"></pre>
+      </div>
+    </div>
+
+    <!-- CARD 2: RESPALDO Y COMPARTIR DATOS (JSON) -->
+    <div class="card">
+      <h3 style="margin:0 0 4px;font-size:16px;color:var(--ink);display:flex;align-items:center;gap:7px;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        Respaldo y Compartir Datos (Sin Servidores ni Macros)
+      </h3>
+      <p class="section-note" style="margin-bottom:14px;">Descarga una copia de seguridad de tus tareas y calificaciones en formato JSON o impórtala en otro dispositivo para compartirla con tu amiga al instante.</p>
+      
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn" onclick="exportBackupJson()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Exportar Respaldo (.json)
+        </button>
+        <label class="btn ghost" style="cursor:pointer;margin:0;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+          Importar Respaldo (.json)
+          <input type="file" id="import-json-file" accept=".json" style="display:none;" onchange="importBackupJson(event)">
+        </label>
+        <button class="btn danger" onclick="resetBitacoraData()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          Restablecer Tareas
+        </button>
+      </div>
+      <div id="backup-feedback" class="status-banner" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- CARD 3: SERVIDOR LOCAL PYTHON (OPCIONAL EN PC) -->
+    <div class="card" id="local-server-card">
+      <div class="collapsible-header" onclick="toggleLocalServerSection()">
+        <div>
+          <h3 style="margin:0;font-size:15px;color:var(--ink-soft);display:flex;align-items:center;gap:7px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+            Servidor Local Python y SQLite (Opcional en PC con iniciar_bitacora.bat)
+          </h3>
+          <span style="font-size:12px;color:var(--ink-soft);">Para envío automático diario programado desde tu propia computadora sin macros.</span>
+        </div>
+        <span id="local-toggle-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+
+      <div id="local-server-body" style="display:none;margin-top:16px;border-top:1px solid var(--line);padding-top:16px;">
+        <div class="preset-bar">
+          <button type="button" class="preset-btn" onclick="applySmtpPreset('gmail')">Gmail</button>
+          <button type="button" class="preset-btn" onclick="applySmtpPreset('outlook')">Outlook / Hotmail</button>
+          <button type="button" class="preset-btn" onclick="applySmtpPreset('yahoo')">Yahoo Mail</button>
+          <button type="button" class="preset-btn" onclick="applySmtpPreset('custom')">Personalizado</button>
+        </div>
+
+        <form id="smtp-form" onsubmit="saveSmtpConfig(event)">
+          <div class="grid-2">
+            <div class="field">
+              <label for="smtp-sender">TU CORREO REMITENTE</label>
+              <input type="email" id="smtp-sender" placeholder="ejemplo@gmail.com">
+            </div>
+            <div class="field">
+              <label for="smtp-pass">CONTRASEÑA / CONTRASEÑA DE APLICACIÓN</label>
+              <div style="display:flex;gap:6px;">
+                <input type="password" id="smtp-pass" placeholder="••••••••••••••••" style="flex:1;">
+                <button type="button" class="btn ghost small" onclick="togglePassVisibility()" title="Mostrar/Ocultar">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:12px;">
+            <div class="field">
+              <label for="smtp-server">SERVIDOR SMTP</label>
+              <input type="text" id="smtp-server" placeholder="smtp.gmail.com">
+            </div>
+            <div class="field">
+              <label for="smtp-port">PUERTO</label>
+              <input type="number" id="smtp-port" placeholder="587">
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:12px;align-items:center;">
+            <div class="field">
+              <label for="schedule-time">HORA DEL RECORDATORIO DIARIO AUTOMÁTICO</label>
+              <select id="schedule-time">
+                <option value="6">06:00 AM</option>
+                <option value="7">07:00 AM</option>
+                <option value="8" selected>08:00 AM (Recomendado)</option>
+                <option value="9">09:00 AM</option>
+                <option value="12">12:00 PM</option>
+                <option value="18">06:00 PM</option>
+                <option value="20">08:00 PM</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding-top:16px;">
+              <input type="checkbox" id="smtp-active" checked>
+              <label for="smtp-active" style="cursor:pointer;font-size:13px;color:var(--ink);">Activar envío automático diario</label>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+            <button type="submit" class="btn">Guardar Configuración SMTP</button>
+            <button type="button" class="btn ghost" onclick="sendTestEmail()">Prueba Local</button>
+            <button type="button" class="btn teal" onclick="sendRemindersNow()">Enviar Recordatorio Local</button>
+          </div>
+        </form>
+
+        <div id="smtp-status-banner" class="status-banner"></div>
+
+        <div style="margin-top:18px;">
+          <h4 style="margin:0 0 6px;font-size:14px;">Historial de Envíos del Servidor Local</h4>
+          <div id="logs-container" style="overflow-x:auto;">
+            <div class="empty" style="padding:10px 0;">Disponible cuando inicias iniciar_bitacora.bat</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+const SCHEDULE = [
+  {day:'Lunes',start:13,end:15,name:'Fundamentos de la Criptografía',virtual:false},
+  {day:'Lunes',start:15,end:17,name:'Base de Datos NoSQL',virtual:false},
+  {day:'Lunes',start:17,end:19,name:'Inteligencia Artificial',virtual:false},
+  {day:'Martes',start:15,end:17,name:'Laboratorio de Innovación Social',virtual:false},
+  {day:'Martes',start:17,end:19,name:'Ecuaciones Diferenciales Aplicadas',virtual:false},
+  {day:'Miércoles',start:15,end:17,name:'Estadística Multivariada',virtual:false},
+  {day:'Miércoles',start:17,end:19,name:'Finanzas Corporativas',virtual:false},
+  {day:'Jueves',start:13,end:15,name:'Laboratorio de Innovación Social',virtual:true},
+  {day:'Jueves',start:15,end:17,name:'Fundamentos de la Criptografía',virtual:true},
+  {day:'Viernes',start:15,end:17,name:'Ecuaciones Diferenciales Aplicadas',virtual:true},
+  {day:'Viernes',start:17,end:19,name:'Finanzas Corporativas',virtual:true},
+  {day:'Sábado',start:9,end:11,name:'Estadística Multivariada',virtual:true},
+  {day:'Sábado',start:11,end:13,name:'Base de Datos NoSQL',virtual:true},
+  {day:'Sábado',start:13,end:15,name:'Inteligencia Artificial',virtual:true},
+];
+const SUBJECTS = [...new Set(SCHEDULE.map(s=>s.name))];
+const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DAY_ICS = {'Lunes':'MO','Martes':'TU','Miércoles':'WE','Jueves':'TH','Viernes':'FR','Sábado':'SA'};
+const SLOTS = [[9,11],[11,13],[13,15],[15,17],[17,19]];
+
+let tasks = [];
+let grades = {};
+let emails = [];
+let isServerOnline = false;
+
+const isCloudEnv = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+function getLocal(key, defaultVal){
+  try{
+    const val = localStorage.getItem(key);
+    return val ? JSON.parse(val) : defaultVal;
+  }catch(e){
+    return defaultVal;
+  }
+}
+
+function setLocal(key, val){
+  try{
+    localStorage.setItem(key, JSON.stringify(val));
+  }catch(e){}
+}
+
+async function loadData(){
+  tasks = getLocal('bitacora-tasks', []);
+  grades = getLocal('bitacora-grades', {});
+  emails = getLocal('bitacora-emails', []);
+
+  SUBJECTS.forEach(name=>{
+    if(!grades[name]) grades[name] = {numParciales:2, passing:6, parciales:[]};
+    while(grades[name].parciales.length < grades[name].numParciales){
+      grades[name].parciales.push({criterios:[]});
+    }
+  });
+
+  await checkEnvironmentAndStatus();
+}
+
+async function checkEnvironmentAndStatus(){
+  const statusPill = document.getElementById('db-status-pill');
+  const statusText = document.getElementById('db-status-text');
+  const dbSummary = document.getElementById('db-summary-text');
+  const envTitle = document.getElementById('env-title');
+
+  if(isCloudEnv){
+    if(envTitle) envTitle.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg> Almacenamiento Web Privado (Netlify)`;
+    statusPill.className = 'db-badge cloud';
+    statusText.textContent = 'Modo Web Privado';
+    if(dbSummary) dbSummary.innerHTML = `<strong>Bitácora en Línea Activa</strong> · Datos privados guardados en tu navegador (LocalStorage). 100% libre de macros. Cada usuario tiene su propia bitácora independiente.`;
+  } else {
+    if(envTitle) envTitle.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg> Estado del Servidor Local y SQLite`;
+    try{
+      const res = await fetch('/api/status');
+      if(res.ok){
+        const data = await res.json();
+        isServerOnline = true;
+        statusPill.className = 'db-badge connected';
+        statusText.textContent = 'SQLite Conectada';
+        if(dbSummary) dbSummary.innerHTML = `<strong>Servidor Local Activo</strong> · Base de datos: <code>bitacora.db</code> · Tareas en BD: <strong>${data.tasks_count}</strong> · Correos: <strong>${data.emails_count}</strong>`;
+        await fetchFromServer();
+        return;
+      }
+    }catch(e){}
+
+    isServerOnline = false;
+    statusPill.className = 'db-badge';
+    statusText.textContent = 'Modo Local (Navegador)';
+    if(dbSummary) dbSummary.innerHTML = `<strong>Almacenamiento Local en Navegador</strong> · Ejecuta <code>iniciar_bitacora.bat</code> si deseas habilitar la base de datos SQLite y envíos automáticos en tu PC.`;
+  }
+}
+
+async function fetchFromServer(){
+  try{
+    const resTasks = await fetch('/api/tasks');
+    if(resTasks.ok){
+      const data = await resTasks.json();
+      if(data.tareas && data.tareas.length > 0){
+        tasks = data.tareas;
+        setLocal('bitacora-tasks', tasks);
+      }
+    }
+    const resEmails = await fetch('/api/emails');
+    if(resEmails.ok){
+      const data = await resEmails.json();
+      if(data.correos && data.correos.length > 0){
+        emails = data.correos;
+        setLocal('bitacora-emails', emails);
+      }
+    }
+    const resGrades = await fetch('/api/grades');
+    if(resGrades.ok){
+      const data = await resGrades.json();
+      if(data.grades && Object.keys(data.grades).length > 0){
+        grades = {...grades, ...data.grades};
+        setLocal('bitacora-grades', grades);
+      }
+    }
+    loadLogs();
+  }catch(e){}
+}
+
+async function saveTasks(){
+  setLocal('bitacora-tasks', tasks);
+  if(isServerOnline){
+    fetch('/api/sync', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({tasks})
+    }).catch(()=>{});
+  }
+  updateEmailPreview();
+}
+
+async function saveGrades(){
+  setLocal('bitacora-grades', grades);
+  if(isServerOnline){
+    fetch('/api/grades', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({grades})
+    }).catch(()=>{});
+  }
+}
+
+function renderEmailFields(){
+  const el = document.getElementById('email-list');
+  if(!el) return;
+  if(emails.length===0) emails=[''];
+  el.innerHTML = emails.map((em,i)=>`
+    <div style="display:flex;gap:8px;">
+      <input type="email" value="${em}" placeholder="correo@ejemplo.com" style="flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:6px;" onchange="updateEmail(${i}, this.value)">
+      ${emails.length>1?`<button type="button" class="btn danger small" onclick="removeEmailField(${i})" title="Eliminar correo">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>`:''}
+    </div>
+  `).join('');
+}
+
+function updateEmail(i, val){ 
+  emails[i] = val.trim(); 
+  setLocal('bitacora-emails', emails);
+  if(isServerOnline){
+    fetch('/api/emails', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({emails})
+    }).catch(()=>{});
+  }
+}
+function addEmailField(){
+  if(emails.length>=6) return;
+  emails.push('');
+  renderEmailFields();
+}
+function removeEmailField(i){
+  emails.splice(i,1);
+  setLocal('bitacora-emails', emails);
+  if(isServerOnline){
+    fetch('/api/emails', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({emails})
+    }).catch(()=>{});
+  }
+  renderEmailFields();
+}
+
+function buildEmailTextSummary(){
+  const now = new Date();
+  const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const todayName = dayNames[now.getDay()];
+  const dateStr = now.toLocaleDateString('es-MX', {day:'2-digit', month:'2-digit', year:'numeric'});
+
+  const todayVirtual = SCHEDULE.filter(c => c.day === todayName && c.virtual);
+  const allVirtual = SCHEDULE.filter(c => c.virtual);
+  const sortedTasks = [...tasks].sort((a,b)=> (a.due || '').localeCompare(b.due || ''));
+
+  let text = `=========================================\n`;
+  text += `🎓 RECORDATORIO ESCOLAR — SEMESTRE 4\n`;
+  text += `📅 ${todayName}, ${dateStr}\n`;
+  text += `=========================================\n\n`;
+
+  text += `💻 CLASES VIRTUALES DE HOY (${todayName.toUpperCase()}):\n`;
+  if(todayVirtual.length > 0){
+    todayVirtual.forEach(c => {
+      text += `  • ${c.name}\n    ⏰ Horario: ${pad(c.start)}:00 - ${pad(c.end)}:00 hrs (Virtual concurrente)\n`;
+    });
+  } else {
+    text += `  (No hay clases virtuales programadas para hoy)\n`;
+  }
+  text += `\n`;
+
+  text += `🗓️ CALENDARIO COMPLETO DE CLASES VIRTUALES:\n`;
+  const virtualByDay = {};
+  allVirtual.forEach(c => {
+    if(!virtualByDay[c.day]) virtualByDay[c.day] = [];
+    virtualByDay[c.day].push(c);
+  });
+  ['Jueves', 'Viernes', 'Sábado'].forEach(day => {
+    if(virtualByDay[day]){
+      text += `  🔹 ${day}:\n`;
+      virtualByDay[day].forEach(c => {
+        text += `     - ${c.name} (${pad(c.start)}:00 - ${pad(c.end)}:00 hrs)\n`;
+      });
+    }
+  });
+  text += `\n`;
+
+  text += `📝 TAREAS PENDIENTES Y ENTREGAS PRÓXIMAS:\n`;
+  if(sortedTasks.length > 0){
+    sortedTasks.forEach((t, i) => {
+      const days = daysUntil(t.due);
+      let dueBadge = '';
+      if(days < 0) dueBadge = `⚠️ VENCIDA hace ${Math.abs(days)} día(s)`;
+      else if(days === 0) dueBadge = `🚨 ¡VENCE HOY!`;
+      else if(days === 1) dueBadge = `⚡ VENCE MAÑANA`;
+      else dueBadge = `⏳ Vence en ${days} días`;
+
+      text += `  ${i+1}. [${t.subject}] ${t.title} ${t.heavy ? '🔥 (Pesada)' : ''}\n`;
+      text += `     📅 Fecha límite: ${t.due} | ${dueBadge}\n`;
+    });
+  } else {
+    text += `  🎉 ¡No tienes tareas pendientes registradas!\n`;
+  }
+
+  text += `\n-----------------------------------------\n`;
+  text += `Enviado desde tu Bitácora Escolar Semestre 4.\n`;
+  return text;
+}
+
+function updateEmailPreview(){
+  const el = document.getElementById('email-preview-box');
+  if(el) el.textContent = buildEmailTextSummary();
+}
+
+function openEmailAppWithSummary(){
+  const validEmails = emails.filter(e => e.trim());
+  const recipients = validEmails.join(',');
+  const subject = encodeURIComponent(`Recordatorio: Clases Virtuales y Tareas — Bitácora Semestre 4`);
+  const body = encodeURIComponent(buildEmailTextSummary());
+  const mailtoUrl = `mailto:${recipients}?subject=${subject}&body=${body}`;
+
+  const fb = document.getElementById('email-action-feedback');
+  if(fb){
+    fb.className = 'status-banner success';
+    fb.innerHTML = `Abriendo tu app de correo (Gmail, Outlook, etc.) con el recordatorio de clases virtuales y tareas preparado.`;
+    fb.style.display = 'block';
+    setTimeout(()=>{ fb.style.display = 'none'; }, 6000);
+  }
+
+  window.location.href = mailtoUrl;
+}
+
+async function copyEmailSummaryToClipboard(){
+  const text = buildEmailTextSummary();
+  try{
+    await navigator.clipboard.writeText(text);
+    const fb = document.getElementById('email-action-feedback');
+    if(fb){
+      fb.className = 'status-banner success';
+      fb.innerHTML = `<strong>¡Copiado al portapapeles con éxito!</strong> Puedes pegarlo directamente en tu correo o WhatsApp.`;
+      fb.style.display = 'block';
+      setTimeout(()=>{ fb.style.display = 'none'; }, 5000);
+    }
+  }catch(e){
+    alert('Resumen listo en la vista previa. Puedes seleccionarlo y copiarlo.');
+  }
+}
+
+function downloadAllVirtualClassesIcs(){
+  const virtualClasses = SCHEDULE.filter(c => c.virtual);
+  let icsEvents = '';
+  virtualClasses.forEach((c, idx) => {
+    const d = nextDateForDay(c.day);
+    const dtStart = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(c.start)}0000`;
+    const dtEnd = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(c.end)}0000`;
+    icsEvents += `BEGIN:VEVENT
+UID:${Date.now()}-${idx}@bitacora-semestre4
+DTSTAMP:${dtStart}Z
+DTSTART:${dtStart}
+DTEND:${dtEnd}
+RRULE:FREQ=WEEKLY;BYDAY=${DAY_ICS[c.day]};UNTIL=20261219T235959Z
+SUMMARY:${icsEscape('Clase Virtual: ' + c.name)}
+DESCRIPTION:${icsEscape('Sesión virtual concurrente de ' + c.name + '. Horario: ' + pad(c.start) + ':00 a ' + pad(c.end) + ':00')}
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio de clase virtual
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+`;
+  });
+
+  const fullIcs = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Bitacora Semestre 4//ES
+CALSCALE:GREGORIAN
+${icsEvents}END:VCALENDAR`;
+
+  downloadIcs('todas-las-clases-virtuales.ics', fullIcs);
+}
+
+function exportBackupJson(){
+  const data = {
+    version: '2.0',
+    exportDate: new Date().toISOString(),
+    tasks,
+    grades,
+    emails
+  };
+  const str = JSON.stringify(data, null, 2);
+  const blob = new Blob([str], {type:'application/json;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `bitacora_respaldo_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  const fb = document.getElementById('backup-feedback');
+  if(fb){
+    fb.className = 'status-banner success';
+    fb.innerHTML = 'Copia de seguridad (.json) exportada con éxito. Guárdala o compártela con tu amiga.';
+    fb.style.display = 'block';
+    setTimeout(()=>{ fb.style.display = 'none'; }, 5000);
+  }
+}
+
+function importBackupJson(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      if(data.tasks && Array.isArray(data.tasks)){
+        tasks = data.tasks;
+        setLocal('bitacora-tasks', tasks);
+        renderTasks();
+      }
+      if(data.grades && typeof data.grades === 'object'){
+        grades = {...grades, ...data.grades};
+        setLocal('bitacora-grades', grades);
+        renderSubjects();
+      }
+      if(data.emails && Array.isArray(data.emails)){
+        emails = data.emails;
+        setLocal('bitacora-emails', emails);
+        renderEmailFields();
+      }
+      const fb = document.getElementById('backup-feedback');
+      if(fb){
+        fb.className = 'status-banner success';
+        fb.innerHTML = '¡Datos restaurados e importados exitosamente!';
+        fb.style.display = 'block';
+        setTimeout(()=>{ fb.style.display = 'none'; }, 5000);
+      }
+      updateEmailPreview();
+    }catch(err){
+      const fb = document.getElementById('backup-feedback');
+      if(fb){
+        fb.className = 'status-banner error';
+        fb.innerHTML = 'El archivo seleccionado no es un JSON de respaldo válido.';
+        fb.style.display = 'block';
+      }
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetBitacoraData(){
+  if(confirm('¿Estás seguro de que deseas restablecer todas tus tareas? Esta acción no se puede deshacer.')){
+    tasks = [];
+    setLocal('bitacora-tasks', tasks);
+    renderTasks();
+    updateEmailPreview();
+    const fb = document.getElementById('backup-feedback');
+    if(fb){
+      fb.className = 'status-banner info';
+      fb.innerHTML = 'Tareas restablecidas.';
+      fb.style.display = 'block';
+      setTimeout(()=>{ fb.style.display = 'none'; }, 4000);
+    }
+  }
+}
+
+function toggleLocalServerSection(){
+  const body = document.getElementById('local-server-body');
+  const icon = document.getElementById('local-toggle-icon');
+  if(body.style.display === 'none'){
+    body.style.display = 'block';
+    icon.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>';
+  } else {
+    body.style.display = 'none';
+    icon.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+  }
+}
+
+function applySmtpPreset(type){
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  if(event && event.target) event.target.classList.add('active');
+  const serverInput = document.getElementById('smtp-server');
+  const portInput = document.getElementById('smtp-port');
+  if(type === 'gmail'){ serverInput.value = 'smtp.gmail.com'; portInput.value = '587'; }
+  else if(type === 'outlook'){ serverInput.value = 'smtp.office365.com'; portInput.value = '587'; }
+  else if(type === 'yahoo'){ serverInput.value = 'smtp.mail.yahoo.com'; portInput.value = '587'; }
+  else if(type === 'custom'){ serverInput.value = ''; portInput.value = '587'; }
+}
+
+function togglePassVisibility(){
+  const passInput = document.getElementById('smtp-pass');
+  passInput.type = passInput.type === 'password' ? 'text' : 'password';
+}
+
+function showBanner(message, type='info'){
+  const banner = document.getElementById('smtp-status-banner');
+  banner.className = `status-banner ${type}`;
+  banner.innerHTML = message;
+  banner.style.display = 'block';
+}
+
+async function saveSmtpConfig(e){
+  if(e) e.preventDefault();
+  const sender_email = document.getElementById('smtp-sender').value.trim();
+  const sender_password = document.getElementById('smtp-pass').value;
+  const smtp_server = document.getElementById('smtp-server').value.trim();
+  const smtp_port = parseInt(document.getElementById('smtp-port').value) || 587;
+  const schedule_hour = parseInt(document.getElementById('schedule-time').value) || 8;
+  const is_active = document.getElementById('smtp-active').checked;
+
+  try{
+    const res = await fetch('/api/smtp', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({sender_email, sender_password, smtp_server, smtp_port, schedule_hour, is_active, use_tls:true})
+    });
+    if(res.ok) showBanner('Configuración local guardada en SQLite.', 'success');
+  }catch(err){
+    showBanner('Servidor local no disponible.', 'error');
+  }
+}
+
+async function sendTestEmail(){
+  showBanner('Enviando correo de prueba local...', 'info');
+  try{
+    const target = emails.find(e=>e.trim()) || document.getElementById('smtp-sender').value.trim();
+    const res = await fetch('/api/send-test', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({target_email: target})
+    });
+    const data = await res.json();
+    if(data.success) showBanner(data.message, 'success');
+    else showBanner(data.message, 'error');
+    loadLogs();
+  }catch(err){ showBanner('Servidor local no disponible.', 'error'); }
+}
+
+async function sendRemindersNow(){
+  showBanner('Enviando recordatorio local...', 'info');
+  try{
+    const res = await fetch('/api/send-reminders', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({})});
+    const data = await res.json();
+    if(data.success) showBanner(data.message, 'success');
+    else showBanner(data.message, 'error');
+    loadLogs();
+  }catch(err){ showBanner('Servidor local no disponible.', 'error'); }
+}
+
+async function loadLogs(){
+  const container = document.getElementById('logs-container');
+  try{
+    const res = await fetch('/api/logs');
+    if(res.ok){
+      const data = await res.json();
+      if(data.logs && data.logs.length > 0){
+        container.innerHTML = `
+          <table class="logs-table">
+            <thead><tr><th>Fecha y Hora</th><th>Destinatario</th><th>Asunto</th><th>Estado</th></tr></thead>
+            <tbody>${data.logs.map(l=>`<tr><td>${l.sent_at}</td><td>${l.recipient}</td><td>${l.subject}</td><td><span class="badge-tag ${l.status==='EXITO'?'ok':'err'}">${l.status}</span></td></tr>`).join('')}</tbody>
+          </table>`;
+      }
+    }
+  }catch(e){}
+}
+
+function pad(n){return n.toString().padStart(2,'0');}
+
+function renderSchedule(){
+  const table = document.getElementById('schedule-table');
+  let html = '<tr><th>Hora</th>' + DAYS.map(d=>`<th>${d}</th>`).join('') + '</tr>';
+  SLOTS.forEach(([s,e])=>{
+    html += `<tr><td>${pad(s)}:00–${pad(e)}:00</td>`;
+    DAYS.forEach(day=>{
+      const cls = SCHEDULE.find(c=>c.day===day && c.start===s && c.end===e);
+      if(cls){
+        html += `<td><div class="cell-class ${cls.virtual?'virt':''}">
+          <span class="name">${cls.name}</span>
+          <span class="tag">${cls.virtual?'Virtual':'Presencial'}</span>
+        </div></td>`;
+      } else {
+        html += '<td></td>';
+      }
+    });
+    html += '</tr>';
+  });
+  table.innerHTML = html;
+
+  const vlist = document.getElementById('virtual-list');
+  vlist.innerHTML = SCHEDULE.filter(c=>c.virtual).map((c,i)=>`
+    <div class="virtual-row">
+      <div class="meta">
+        <span class="name">${c.name}</span>
+        <span class="time">${c.day} · ${pad(c.start)}:00–${pad(c.end)}:00</span>
+      </div>
+      <button class="btn ghost small" onclick="downloadClassReminder(${i})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        Descargar .ics
+      </button>
+    </div>
+  `).join('');
+}
+
+function icsEscape(str){ return str.replace(/,/g,'\\,').replace(/;/g,'\\;'); }
+function downloadIcs(filename, content){
+  const blob = new Blob([content], {type:'text/calendar;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function nextDateForDay(dayName){
+  const targetIdx = DAYS.indexOf(dayName);
+  const jsIdx = (targetIdx + 1) % 7;
+  const now = new Date();
+  const diff = (jsIdx - now.getDay() + 7) % 7 || 7;
+  const d = new Date(now);
+  d.setDate(now.getDate() + diff);
+  return d;
+}
+
+function downloadClassReminder(i){
+  const virtualClasses = SCHEDULE.filter(c=>c.virtual);
+  const c = virtualClasses[i];
+  const d = nextDateForDay(c.day);
+  const dtStart = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(c.start)}0000`;
+  const dtEnd = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(c.end)}0000`;
+  const ics = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Bitacora Semestre 4//ES
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:${Date.now()}-class-${i}@bitacora-semestre4
+DTSTAMP:${dtStart}Z
+DTSTART:${dtStart}
+DTEND:${dtEnd}
+RRULE:FREQ=WEEKLY;BYDAY=${DAY_ICS[c.day]};UNTIL=20261219T235959Z
+SUMMARY:${icsEscape('Clase virtual: ' + c.name)}
+DESCRIPTION:${icsEscape('Sesión virtual concurrente de ' + c.name + '. Horario: ' + pad(c.start) + ':00 a ' + pad(c.end) + ':00')}
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio de clase virtual
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+END:VCALENDAR`;
+  downloadIcs(`clase-${c.name.toLowerCase().replace(/\s+/g,'-')}.ics`, ics);
+}
+
+function daysUntil(dateStr){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = new Date(dateStr + 'T00:00:00');
+  return Math.round((due - today) / 86400000);
+}
+
+function renderTasks(){
+  const list = document.getElementById('task-list');
+  const counter = document.getElementById('tasks-counter');
+  const clearBtn = document.getElementById('btn-clear-all-tasks');
+
+  if(tasks.length === 0){
+    list.innerHTML = '<div class="empty">No tienes tareas pendientes. Agrega una en el formulario superior.</div>';
+    if(counter) counter.textContent = '0 tareas registradas';
+    if(clearBtn) clearBtn.style.display = 'none';
+    return;
+  }
+
+  if(counter) counter.textContent = `${tasks.length} tarea(s) registrada(s)`;
+  if(clearBtn) clearBtn.style.display = 'inline-flex';
+
+  const sorted = [...tasks].sort((a,b)=> a.due.localeCompare(b.due));
+  list.innerHTML = sorted.map(t=>{
+    const d = daysUntil(t.due);
+    let rowClass = '';
+    if(d < 0) rowClass = 'overdue';
+    else if(d <= (t.heavy?3:1)) rowClass = 'soon';
+    const dueLabel = d < 0 ? `Venció hace ${Math.abs(d)} día(s)` : d===0 ? 'Vence hoy' : d===1 ? 'Vence mañana' : `Vence en ${d} día(s)`;
+    return `
+    <div class="task-row ${rowClass}">
+      <input type="checkbox" title="Marcar como completada" onchange="completeTask('${t.id}')">
+      <div class="box">
+        <div class="title-line">
+          <span class="title">${t.title}</span>
+          ${t.heavy?'<span class="badge">Pesada</span>':''}
+        </div>
+        <div class="subject">${t.subject} · Entrega: ${t.due}</div>
+      </div>
+      <div class="due">${dueLabel}</div>
+      <div class="actions">
+        <button class="btn ghost small" title="Descargar recordatorio ICS" onclick="downloadTaskReminder('${t.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          .ics
+        </button>
+        <button class="btn danger small" title="Eliminar tarea" onclick="deleteTask('${t.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function completeTask(id){
+  tasks = tasks.filter(t=>t.id !== id);
+  saveTasks(); renderTasks();
+  if(isServerOnline){
+    fetch('/api/tasks/delete', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({id})
+    }).catch(()=>{});
+  }
+}
+
+function deleteTask(id){
+  tasks = tasks.filter(t=>t.id !== id);
+  saveTasks(); renderTasks();
+  if(isServerOnline){
+    fetch('/api/tasks/delete', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({id})
+    }).catch(()=>{});
+  }
+}
+
+function clearAllTasks(){
+  if(tasks.length === 0) return;
+  if(confirm('¿Deseas eliminar todas las tareas registradas de la lista?')){
+    tasks = [];
+    saveTasks(); renderTasks();
+    if(isServerOnline){
+      fetch('/api/tasks/clear', {method:'POST'}).catch(()=>{});
+    }
+  }
+}
+
+function downloadTaskReminder(id){
+  const t = tasks.find(x=>x.id===id);
+  if(!t) return;
+  const due = new Date(t.due + 'T00:00:00');
+  const offsets = t.heavy ? [3,2,1,0] : [1];
+  let events = '';
+  offsets.forEach(off=>{
+    const d = new Date(due);
+    d.setDate(due.getDate() - off);
+    const dt = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T090000`;
+    const label = off===0 ? `Hoy entrega: ${t.title}` : `Faltan ${off} día(s): ${t.title}`;
+    events += `BEGIN:VEVENT
+UID:${Date.now()}-${off}-${t.id}@bitacora-emi
+DTSTAMP:${dt}Z
+DTSTART:${dt}
+DTEND:${dt}
+SUMMARY:${icsEscape(label)}
+DESCRIPTION:${icsEscape('Materia: ' + t.subject + ' · Entrega: ' + t.due)}
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio de tarea
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+`;
+  });
+  const ics = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Bitacora Emi//ES
+${events}END:VCALENDAR`;
+  downloadIcs(`tarea-${t.title.toLowerCase().replace(/\s+/g,'-').slice(0,30)}.ics`, ics);
+}
+
+document.getElementById('task-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const title = document.getElementById('t-title').value.trim();
+  const subject = document.getElementById('t-subject').value;
+  const due = document.getElementById('t-due').value;
+  const heavy = document.getElementById('t-heavy').checked;
+  if(!title || !due) return;
+  
+  const id = 't' + Date.now();
+  const newTask = {id, title, subject, due, heavy};
+  tasks.push(newTask);
+  
+  saveTasks();
+  renderTasks();
+  downloadTaskReminder(id);
+
+  if(isServerOnline){
+    fetch('/api/tasks', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(newTask)
+    }).catch(()=>{});
+  }
+
+  if(config.scriptUrl){
+    postToSheet({action:'addTask', id, titulo:title, materia:subject, fecha_limite:due, pesada:heavy});
+  }
+  this.reset();
+});
+
+function fillSubjectSelect(){
+  document.getElementById('t-subject').innerHTML = SUBJECTS.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+
+function computeParcial(p){
+  let earnedWeighted = 0, weightDone = 0, weightTotal = 0;
+  p.criterios.forEach(c=>{
+    const w = parseFloat(c.weight) || 0;
+    weightTotal += w;
+    if(c.grade !== '' && c.grade !== null && c.grade !== undefined){
+      const g = parseFloat(c.grade) || 0;
+      earnedWeighted += g * w;
+      weightDone += w;
+    }
+  });
+  const weightPending = Math.max(0, weightTotal - weightDone);
+  return {earnedWeighted, weightDone, weightPending, weightTotal};
+}
+
+function renderSubjects(){
+  const container = document.getElementById('subjects-accordion');
+  container.innerHTML = SUBJECTS.map(name=>{
+    const cfg = grades[name];
+    const parcialResults = cfg.parciales.map(computeParcial);
+    const completedParciales = parcialResults.filter(r=>r.weightTotal>0 && r.weightPending===0);
+    let overallStatus = 'pending', overallHtml = '';
+    if(completedParciales.length === cfg.parciales.length && cfg.parciales.length>0 && cfg.parciales.every(p=>p.criterios.length>0)){
+      const avg = completedParciales.reduce((s,r)=> s + r.earnedWeighted/100, 0) / cfg.parciales.length;
+      overallStatus = avg >= cfg.passing ? 'ok' : 'warn';
+      overallHtml = `<div class="overall-box ${overallStatus==='warn'?'bad':''}">
+        Promedio final: <strong>${avg.toFixed(2)}</strong> — ${avg>=cfg.passing? 'Vas pasando la materia.' : 'No estás pasando la materia con este resultado.'}
+      </div>`;
+    } else {
+      const doneParcialGrades = [];
+      let pendingCount = 0;
+      cfg.parciales.forEach(p=>{
+        const r = computeParcial(p);
+        if(r.weightTotal>0 && r.weightPending===0){ doneParcialGrades.push(r.earnedWeighted/100); }
+        else { pendingCount++; }
+      });
+      if(pendingCount>0 && cfg.numParciales>0){
+        const sumDone = doneParcialGrades.reduce((a,b)=>a+b,0);
+        const neededAvgOnPending = (cfg.passing * cfg.numParciales - sumDone) / pendingCount;
+        overallStatus = neededAvgOnPending > 10 ? 'warn' : 'pending';
+        overallHtml = `<div class="overall-box ${overallStatus==='warn'?'bad':''}">
+          ${doneParcialGrades.length>0 ? `Llevas ${doneParcialGrades.map(g=>g.toFixed(1)).join(', ')} en los parciales concluidos. ` : ''}
+          Necesitas un promedio de <strong>${Math.min(neededAvgOnPending,10).toFixed(2)}</strong> en los ${pendingCount} parcial(es) restante(s) para aprobar con ${cfg.passing}.
+        </div>`;
+      }
+    }
+
+    const parcialesHtml = cfg.parciales.map((p,pi)=>{
+      const r = computeParcial(p);
+      const currentPartialGrade = r.weightDone>0 ? (r.earnedWeighted/(r.weightDone||1)).toFixed(2) : '—';
+      const neededOnPending = r.weightPending>0 ? Math.max(0, ((cfg.passing*100) - r.earnedWeighted) / r.weightPending) : null;
+      return `
+      <div class="partial">
+        <div class="partial-head">
+          <span class="label">Parcial ${pi+1}</span>
+          <span class="result">Peso usado: ${r.weightTotal}/100 ${r.weightTotal!==100 && r.weightTotal>0 ? '(!)' : ''}</span>
+        </div>
+        <div id="crit-${name}-${pi}"></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 6px;">
+          <button type="button" class="btn ghost small" onclick="addCriterio('${name}',${pi})">+ Agregar criterio</button>
+          <button type="button" class="btn danger small" onclick="clearCriterios('${name}',${pi})" title="Eliminar todos los criterios de este parcial si pusiste datos de más">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            Eliminar criterios
+          </button>
+        </div>
+        ${r.weightTotal!==100 && r.weightTotal>0 ? `<div class="weight-warn">Los pesos deben sumar 100 (llevas ${r.weightTotal}).</div>` : ''}
+        <div class="overall-box" style="margin-top:10px;">
+          ${r.weightDone>0 ? `Promedio con lo capturado: <strong>${currentPartialGrade}</strong>. ` : 'Aún no capturas calificaciones en este parcial. '}
+          ${r.weightPending>0 ? `Necesitas <strong>${Math.min(neededOnPending,10).toFixed(2)}</strong> en lo que falta (${r.weightPending}% del parcial) para sacar ${cfg.passing} en este parcial.` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="subject-accordion">
+      <div class="subject-head" onclick="toggleSubject('${name}')">
+        <span class="name">${name}</span>
+        <span class="status ${overallStatus}">${overallStatus==='ok'?'Vas bien':overallStatus==='warn'?'No estás pasando':'Sin definir'}</span>
+      </div>
+      <div class="subject-body" id="body-${name}">
+        <div class="subject-config">
+          <div class="field">
+            <label>N.º DE PARCIALES</label>
+            <input type="number" min="1" max="6" value="${cfg.numParciales}" onchange="setNumParciales('${name}', this.value)">
+          </div>
+          <div class="field">
+            <label>CALIFICACIÓN APROBATORIA</label>
+            <input type="number" step="0.1" min="0" max="10" value="${cfg.passing}" onchange="setPassing('${name}', this.value)">
+          </div>
+          <div style="align-self:flex-end;margin-bottom:2px;">
+            <button type="button" class="btn ghost small danger" onclick="resetSubjectCriterios('${name}')" title="Restablecer todos los criterios de esta materia">
+              Restablecer materia
+            </button>
+          </div>
+        </div>
+        ${parcialesHtml}
+        ${overallHtml}
+      </div>
+    </div>`;
+  }).join('');
+
+  SUBJECTS.forEach(name=>{
+    grades[name].parciales.forEach((p,pi)=> renderCriterios(name,pi));
+  });
+}
+
+function toggleSubject(name){
+  document.getElementById('body-'+name).classList.toggle('open');
+}
+
+function setNumParciales(name, val){
+  const n = Math.max(1, Math.min(6, parseInt(val)||1));
+  grades[name].numParciales = n;
+  while(grades[name].parciales.length < n) grades[name].parciales.push({criterios:[]});
+  while(grades[name].parciales.length > n) grades[name].parciales.pop();
+  saveGrades(); renderSubjects();
+  document.getElementById('body-'+name).classList.add('open');
+}
+function setPassing(name, val){
+  grades[name].passing = parseFloat(val) || 6;
+  saveGrades(); renderSubjects();
+  document.getElementById('body-'+name).classList.add('open');
+}
+
+function addCriterio(name, pi){
+  grades[name].parciales[pi].criterios.push({label:'', weight:'', grade:''});
+  saveGrades(); renderSubjects();
+  document.getElementById('body-'+name).classList.add('open');
+}
+function removeCriterio(name, pi, ci){
+  grades[name].parciales[pi].criterios.splice(ci,1);
+  saveGrades(); renderSubjects();
+  document.getElementById('body-'+name).classList.add('open');
+}
+function clearCriterios(name, pi){
+  if(grades[name] && grades[name].parciales[pi]){
+    if(grades[name].parciales[pi].criterios.length === 0){
+      alert('No hay criterios registrados en este parcial para eliminar.');
+      return;
+    }
+    if(confirm(`¿Deseas eliminar todos los criterios del Parcial ${pi+1} de ${name}?`)){
+      grades[name].parciales[pi].criterios = [];
+      saveGrades(); renderSubjects();
+      document.getElementById('body-'+name).classList.add('open');
+    }
+  }
+}
+function resetSubjectCriterios(name){
+  if(confirm(`¿Deseas restablecer y vaciar todos los criterios y notas de ${name}?`)){
+    grades[name] = {numParciales:2, passing:6, parciales:[{criterios:[]},{criterios:[]}]};
+    saveGrades(); renderSubjects();
+    document.getElementById('body-'+name).classList.add('open');
+  }
+}
+function updateCriterio(name, pi, ci, field, val){
+  grades[name].parciales[pi].criterios[ci][field] = val;
+  saveGrades();
+}
+
+function renderCriterios(name, pi){
+  const el = document.getElementById(`crit-${name}-${pi}`);
+  if(!el) return;
+  const criterios = grades[name].parciales[pi].criterios;
+  el.innerHTML = criterios.map((c,ci)=>`
+    <div class="crit-row">
+      <input type="text" placeholder="Ej. Examen, Actividad 1" value="${c.label}" onchange="updateCriterio('${name}',${pi},${ci},'label',this.value)">
+      <input type="number" class="mono" placeholder="% peso" min="0" max="100" value="${c.weight}" onchange="updateCriterio('${name}',${pi},${ci},'weight',this.value); renderSubjects(); document.getElementById('body-${name}').classList.add('open');">
+      <input type="number" class="mono" placeholder="Calif." min="0" max="10" step="0.1" value="${c.grade}" onchange="updateCriterio('${name}',${pi},${ci},'grade',this.value); renderSubjects(); document.getElementById('body-${name}').classList.add('open');">
+      <button type="button" class="btn danger small" title="Eliminar este criterio" onclick="removeCriterio('${name}',${pi},${ci})">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+  `).join('') || '<div class="section-note" style="margin:6px 0;">Sin criterios aún.</div>';
+}
+
+// Control de pestañas
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+async function init(){
+  await loadData();
+  renderSchedule();
+  fillSubjectSelect();
+  renderTasks();
+  renderSubjects();
+  renderEmailFields();
+  updateEmailPreview();
+}
+
+init();
+</script>
+</body>
+</html>

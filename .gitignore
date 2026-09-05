@@ -1,0 +1,5 @@
+bitacora.db
+bitacora.db-shm
+bitacora.db-wal
+__pycache__/
+*.pyc
