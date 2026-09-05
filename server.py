@@ -516,14 +516,14 @@ class BitacoraRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif path == '/api/smtp':
             with get_db() as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT smtp_server, smtp_port, sender_email, use_tls, use_ssl, schedule_hour, schedule_minute, is_active FROM smtp_config WHERE id = 1')
+                cursor.execute('SELECT smtp_server, smtp_port, sender_email, sender_password, use_tls, use_ssl, schedule_hour, schedule_minute, is_active FROM smtp_config WHERE id = 1')
                 cfg = cursor.fetchone()
                 if cfg:
                     return self.send_json_response({
                         'smtp_server': cfg['smtp_server'],
                         'smtp_port': cfg['smtp_port'],
                         'sender_email': cfg['sender_email'],
-                        'has_password': True,
+                        'has_password': bool(cfg['sender_password'] and cfg['sender_password'].strip()),
                         'use_tls': bool(cfg['use_tls']),
                         'use_ssl': bool(cfg['use_ssl']),
                         'schedule_hour': cfg['schedule_hour'],
@@ -547,7 +547,17 @@ class BitacoraRequestHandler(http.server.SimpleHTTPRequestHandler):
                 } for r in rows]
             return self.send_json_response({'logs': logs})
             
-        # Archivos estáticos normales
+        # Seguridad: Bloquear acceso directo a bases de datos, scripts de servidor, logs y archivos ocultos
+        clean_path = path.lower().split('?')[0]
+        forbidden_extensions = ('.db', '.db-shm', '.db-wal', '.db-journal', '.py', '.bat', '.env', '.log', '.sql', '.bak')
+        if any(clean_path.endswith(ext) for ext in forbidden_extensions) or '/.' in clean_path or clean_path.startswith('/.'):
+            self.send_response(403)
+            self.send_header('Content-Type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(b'403 Forbidden: Acceso denegado a recursos protegidos.')
+            return
+
+        # Archivos estáticos normales permitidos
         return super().do_GET()
 
     def do_POST(self):

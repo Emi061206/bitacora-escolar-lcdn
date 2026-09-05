@@ -1,5 +1,91 @@
-bitacora.db
-bitacora.db-shm
-bitacora.db-wal
+# ==========================================
+# Bases de datos y archivos de persistencia local
+# ==========================================
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+*.db-journal
+bitacora.db*
+*.sql
+*.bak
+
+# ==========================================
+# Credenciales, Secretos y Variables de Entorno
+# ==========================================
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.cert
+*.crt
+*.pfx
+*.p12
+credentials.json
+secrets.json
+id_rsa*
+
+# ==========================================
+# Python / Cache / Entornos Virtuales
+# ==========================================
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==========================================
+# Archivos de Sistema Operativo
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Editores y Entornos de Desarrollo (IDEs)
+# ==========================================
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+*~
+
+# ==========================================
+# Logs y Archivos Temporales
+# ==========================================
+*.log
+logs/
+tmp/
+temp/
